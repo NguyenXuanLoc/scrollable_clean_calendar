@@ -75,7 +75,7 @@ class ScrollableCleanCalendar extends StatefulWidget {
   final double dayRadius;
 
   /// A builder to make a customized month
-  final Widget Function(BuildContext context, String month)? monthBuilder;
+  final Widget Function(BuildContext context, String month, DateTime date)? monthBuilder;
 
   /// A builder to make a customized weekday
   final Widget Function(BuildContext context, String weekday)? weekdayBuilder;
