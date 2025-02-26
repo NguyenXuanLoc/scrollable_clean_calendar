@@ -85,9 +85,14 @@ class ScrollableCleanCalendar extends StatefulWidget {
 
   /// The controller of ScrollableCleanCalendar
   final CleanCalendarController calendarController;
+  final VoidCallback? onScrollUp;
+  final VoidCallback? onScrollDown;
+
 
   const ScrollableCleanCalendar({
     this.locale = 'en',
+    this.onScrollUp,
+    this.onScrollDown,
     this.scrollController,
     this.showWeekdays = true,
     this.layout,
@@ -161,18 +166,30 @@ class _ScrollableCleanCalendarState extends State<ScrollableCleanCalendar> {
   }
 
   Widget scrollablePositionedListCalendar() {
-    return ScrollablePositionedList.separated(
-      itemScrollController: widget.calendarController.itemScrollController,
-      padding: widget.padding ??
-          const EdgeInsets.symmetric(horizontal: 16, vertical: 32),
-      separatorBuilder: (_, __) =>
-          SizedBox(height: widget.spaceBetweenCalendars),
-      itemCount: widget.calendarController.months.length,
-      itemBuilder: (context, index) {
-        final month = widget.calendarController.months[index];
-
-        return childCollumn(month);
+    return NotificationListener<ScrollNotification>(
+      onNotification: (ScrollNotification notification) {
+        if (notification is ScrollUpdateNotification) {
+          if (notification.scrollDelta! > 0) {
+            widget.onScrollDown?.call();
+          } else if (notification.scrollDelta! < 0) {
+            widget.onScrollUp?.call();
+          }
+        }
+        return true;
       },
+      child: ScrollablePositionedList.separated(
+        itemScrollController: widget.calendarController.itemScrollController,
+        padding: widget.padding ??
+            const EdgeInsets.symmetric(horizontal: 16, vertical: 32),
+        separatorBuilder: (_, __) =>
+            SizedBox(height: widget.spaceBetweenCalendars),
+        itemCount: widget.calendarController.months.length,
+        itemBuilder: (context, index) {
+          final month = widget.calendarController.months[index];
+
+          return childCollumn(month);
+        },
+      ),
     );
   }
 
